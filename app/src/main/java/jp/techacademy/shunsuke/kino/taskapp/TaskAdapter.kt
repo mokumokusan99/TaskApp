@@ -5,27 +5,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
+import java.util.*
 
-class TaskAdapter(context: Context) : BaseAdapter() {
+class TaskAdapter(context: Context) : BaseAdapter(), Filterable {
     private val layoutInflater: LayoutInflater
     private var taskList = mutableListOf<Task>()
+    private var filteredTaskList = mutableListOf<Task>()
 
     init {
         this.layoutInflater = LayoutInflater.from(context)
     }
 
     override fun getCount(): Int {
-        return taskList.size
+        return filteredTaskList.size
     }
 
     override fun getItem(position: Int): Any {
-        return taskList[position]
+        return filteredTaskList[position]
     }
 
     override fun getItemId(position: Int): Long {
-        return taskList[position].id.toLong()
+        return filteredTaskList[position].id.toLong()
     }
+
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View =
@@ -41,11 +46,34 @@ class TaskAdapter(context: Context) : BaseAdapter() {
     }
 
     fun updateTaskList(taskList: List<Task>) {
-        // 一度クリアしてから新しいタスク一覧に入替
         this.taskList.clear()
         this.taskList.addAll(taskList)
-        // データに変更があったことをadapterに通知
-        notifyDataSetChanged()
+        filter.filter("")
+    }
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val results = FilterResults()
+                val query = constraint.toString().toLowerCase(Locale.getDefault())
+                val filteredList = if (query.isEmpty()) {
+                    taskList
+                } else {
+                    taskList.filter { task ->
+                        task.category.contains(query)
+                    }
+                }
+                results.values = filteredList
+                results.count = filteredList.size
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                if (results != null && results.count > 0) {
+                    filteredTaskList = results.values as MutableList<Task>
+                    notifyDataSetChanged()
+                }
+            }
+        }
     }
 }
 

@@ -7,8 +7,7 @@
     <string name="button_date_text">----/--/--</string>
     <string name="button_time_text">--:--</string>
     <string name="button_done_text">決定</string>
-    <string name="input_serch_hint">カテゴリー検索</string>
-    <string name="button_serch_text">検索</string>
+    <string name="input_serch_hint">検索</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>

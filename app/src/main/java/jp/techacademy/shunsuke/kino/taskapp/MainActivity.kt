@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -160,9 +161,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
+        //（ここから）searchviewを使用するために追加
+        binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // 入力されたキーワードでリストをフィルタリング
+                taskAdapter.filter.filter(newText.toString())
+                return false
+            }
+        })
+//searchviewを使用するために追加（ここまで）
     }
 
-    
+
 
 
 
