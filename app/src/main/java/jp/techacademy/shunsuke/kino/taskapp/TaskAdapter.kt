@@ -39,8 +39,8 @@ class TaskAdapter(context: Context) : BaseAdapter(), Filterable {
         val textView1 = view.findViewById<TextView>(android.R.id.text1)
         val textView2 = view.findViewById<TextView>(android.R.id.text2)
 
-        textView1.text = taskList[position].title
-        textView2.text = taskList[position].date
+        textView1.text = filteredTaskList[position].title
+        textView2.text = filteredTaskList[position].date
 
         return view
     }
@@ -53,27 +53,26 @@ class TaskAdapter(context: Context) : BaseAdapter(), Filterable {
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val results = FilterResults()
-                val query = constraint.toString().toLowerCase(Locale.getDefault())
-                val filteredList = if (query.isEmpty()) {
-                    taskList
+                val filterResults = FilterResults()
+                val queryString = constraint?.toString()?.toLowerCase(Locale.getDefault())
+
+                filteredTaskList = if (queryString.isNullOrBlank()) {
+                    taskList.toMutableList()
                 } else {
-                    taskList.filter { task ->
-                        task.category.contains(query)
-                    }
+                    taskList.filter { it.category.toLowerCase(Locale.getDefault()).contains(queryString) }
+                        .toMutableList()
                 }
-                results.values = filteredList
-                results.count = filteredList.size
-                return results
+
+                filterResults.values = filteredTaskList
+                return filterResults
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                if (results != null && results.count > 0) {
-                    filteredTaskList = results.values as MutableList<Task>
-                    notifyDataSetChanged()
-                }
+                filteredTaskList = results?.values as MutableList<Task>? ?: mutableListOf()
+                notifyDataSetChanged()
             }
         }
     }
+
 }
 
